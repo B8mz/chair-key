@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sibbi Key System &bull; Admin Dashboard</title>
+    <title>Xanax Service &bull; Admin Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -49,6 +49,111 @@
             margin: 0 auto;
         }
 
+        /* Login Modal Gatekeeper */
+        #loginGatekeeper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(10, 11, 14, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: #12141d;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(139, 92, 246, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 440px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+
+        .login-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--accent-gradient);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin: 0 auto 20px;
+            box-shadow: 0 8px 25px var(--accent-glow);
+        }
+
+        .login-box h2 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .login-box p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 28px;
+            line-height: 1.5;
+        }
+
+        .login-input-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .login-input-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .login-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: var(--font-mono);
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .login-input:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .login-error {
+            color: var(--color-danger);
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .btn-full {
+            width: 100%;
+            padding: 14px;
+            font-size: 14px;
+            justify-content: center;
+            border-radius: 12px;
+        }
+
+        /* Header */
         header {
             display: flex;
             justify-content: space-between;
@@ -93,22 +198,12 @@
         .admin-auth-bar {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             padding: 8px 14px;
             border-radius: 12px;
             backdrop-filter: blur(12px);
-        }
-
-        .admin-auth-bar input {
-            background: transparent;
-            border: none;
-            color: var(--text-main);
-            font-family: var(--font-mono);
-            font-size: 13px;
-            outline: none;
-            width: 140px;
         }
 
         .btn {
@@ -478,20 +573,41 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Login Gatekeeper Modal -->
+    <div id="loginGatekeeper">
+        <div class="login-box">
+            <div class="login-icon">&#x1F510;</div>
+            <h2>Admin Authentifizierung</h2>
+            <p>Gib den geheimen Admin-Schlüssel ein, um das Xanax Service Dashboard zu entsperren.</p>
+            
+            <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+                <div class="login-input-group">
+                    <label for="gatekeeperKey">Admin-Passwort / Key</label>
+                    <input type="password" id="gatekeeperKey" class="login-input" placeholder="Admin Key eingeben..." autofocus />
+                </div>
+                
+                <div id="loginErrorMessage" class="login-error">Ungültiger Admin-Schlüssel! Zugriff verweigert.</div>
+
+                <button type="submit" id="btnLoginSubmit" class="btn btn-primary btn-full">
+                    <span>&#x1F511; Entsperren & Einloggen</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="container" id="dashboardContainer" style="display: none;">
         <!-- Header -->
         <header>
             <div class="logo-area">
                 <div class="logo-icon">&#x1F511;</div>
                 <div class="logo-text">
-                    <h1>Sibbi Key System</h1>
+                    <h1>Xanax Service</h1>
                     <span>HWID Lock & License Management API</span>
                 </div>
             </div>
             <div class="admin-auth-bar">
-                <span style="font-size: 12px; color: var(--text-muted);">Admin Token:</span>
-                <input type="password" id="adminTokenInput" placeholder="admin123" />
-                <button class="btn btn-sm btn-primary" onclick="saveToken()">Speichern</button>
+                <span style="font-size: 12px; color: var(--color-success); font-weight: 600;">● Admin Angemeldet</span>
+                <button class="btn btn-sm btn-danger" onclick="logoutAdmin()">Abmelden</button>
             </div>
         </header>
 
@@ -544,7 +660,7 @@
                     </div>
                     <div class="form-group">
                         <label>Wunsch-Key (Optional)</label>
-                        <input type="text" id="inputCustomKey" class="form-input mono" placeholder="SIBBI-VIP-XXXX" />
+                        <input type="text" id="inputCustomKey" class="form-input mono" placeholder="XANAX-VIP-XXXX" />
                     </div>
                     <button class="btn btn-primary" onclick="createKey()">Key generieren</button>
                 </div>
@@ -601,16 +717,64 @@
         let currentFilter = 'ALL';
 
         function getAdminToken() {
-            return localStorage.getItem('sibbi_admin_token') || 'admin123';
+            return localStorage.getItem('XANAX_admin_token') || '';
         }
 
-        function saveToken() {
-            const val = document.getElementById('adminTokenInput').value.trim();
-            if (val) {
-                localStorage.setItem('sibbi_admin_token', val);
-                showToast("Admin-Token gespeichert!");
-                fetchKeys();
+        async function handleLoginSubmit(e) {
+            e.preventDefault();
+            const inputVal = document.getElementById('gatekeeperKey').value.trim();
+            const errorElem = document.getElementById('loginErrorMessage');
+            const btnSubmit = document.getElementById('btnLoginSubmit');
+
+            if (!inputVal) {
+                errorElem.innerText = "Bitte gib den Admin-Schlüssel ein!";
+                errorElem.style.display = "block";
+                return;
             }
+
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = "Prüfe Schlüssel...";
+
+            const valid = await checkToken(inputVal);
+            if (valid) {
+                localStorage.setItem('XANAX_admin_token', inputVal);
+                errorElem.style.display = "none";
+                showToast("Erfolgreich angemeldet!");
+                revealDashboard();
+                fetchKeys();
+            } else {
+                errorElem.innerText = "Falscher Admin-Schlüssel! Zugriff verweigert.";
+                errorElem.style.display = "block";
+                document.getElementById('gatekeeperKey').select();
+            }
+
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = "<span>&#x1F511; Entsperren & Einloggen</span>";
+        }
+
+        async function checkToken(token) {
+            try {
+                const res = await fetch('/api/v1/admin/keys', {
+                    headers: { 'X-Admin-Token': token }
+                });
+                return res.ok;
+            } catch {
+                return false;
+            }
+        }
+
+        function revealDashboard() {
+            document.getElementById('loginGatekeeper').style.display = 'none';
+            document.getElementById('dashboardContainer').style.display = 'block';
+        }
+
+        function logoutAdmin() {
+            localStorage.removeItem('XANAX_admin_token');
+            document.getElementById('dashboardContainer').style.display = 'none';
+            document.getElementById('loginGatekeeper').style.display = 'flex';
+            document.getElementById('gatekeeperKey').value = '';
+            document.getElementById('loginErrorMessage').style.display = 'none';
+            showToast("Erfolgreich abgemeldet.");
         }
 
         function showToast(msg) {
@@ -635,13 +799,15 @@
 
         async function fetchKeys() {
             const token = getAdminToken();
+            if (!token) return;
             try {
                 const res = await fetch('/api/v1/admin/keys', {
                     headers: { 'X-Admin-Token': token }
                 });
                 if (!res.ok) {
                     if (res.status === 401) {
-                        showToast("Fehler: Ungültiger Admin-Token!");
+                        logoutAdmin();
+                        showToast("Sitzung abgelaufen oder ungültiger Schlüssel.");
                     } else {
                         showToast("Fehler beim Laden: " + res.statusText);
                     }
@@ -826,10 +992,19 @@
             });
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
             const saved = getAdminToken();
-            document.getElementById('adminTokenInput').value = saved;
-            fetchKeys();
+            if (saved) {
+                const valid = await checkToken(saved);
+                if (valid) {
+                    revealDashboard();
+                    fetchKeys();
+                    return;
+                }
+            }
+            // Not logged in or invalid token
+            document.getElementById('loginGatekeeper').style.display = 'flex';
+            document.getElementById('dashboardContainer').style.display = 'none';
         });
     </script>
 </body>
